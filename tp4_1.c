@@ -30,6 +30,8 @@ tarea BuscarTareaPorPalabra(tarea **tareasPendientes,tarea **tareasRealizadas,in
 
 void menu(tarea **tareasPendientes,tarea **tareasRealizadas,int cant);
 
+void liberoMemoria(tarea **tareasPendientes,tarea **tareasRealizadas,int cant);
+
 
 int main(int argc, char const *argv[])
 {
@@ -68,13 +70,7 @@ int main(int argc, char const *argv[])
     menu(tareasPendientes,tareasRealizadas,cant);
 
     //LIBERACION DE MEMORIA
-    for (int i = 0; i < cant; i++)
-    {
-            free(tareasPendientes[i]);
-            free(tareasRealizadas[i]);
-    }
-    free(tareasPendientes);
-    free(tareasRealizadas);
+    liberoMemoria(tareasPendientes,tareasRealizadas,cant);
 
     return 0;
 }
@@ -249,4 +245,26 @@ void menu(tarea **tareasPendientes,tarea **tareasRealizadas,int cant)
         }
     }
     free(palabraBuscada);
+}
+
+
+void liberoMemoria(tarea **tareasPendientes,tarea **tareasRealizadas,int cant)
+{
+    for (int i = 0; i < cant; i++)
+    {
+        if (tareasPendientes[i] != NULL)
+        {
+            free(tareasPendientes[i]->Descripcion);
+        }
+
+        if (tareasRealizadas[i] != NULL)
+        {
+            free(tareasRealizadas[i]->Descripcion);
+        }
+
+        free(tareasPendientes[i]);
+        free(tareasRealizadas[i]);
+    }
+    free(tareasPendientes);
+    free(tareasRealizadas);
 }
