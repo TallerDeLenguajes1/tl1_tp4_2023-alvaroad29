@@ -4,6 +4,7 @@
 ### C ###
 # Prerequisites
 *.d
+tempCodeRunnerFile.c
 
 # Object files
 *.o
