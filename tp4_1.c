@@ -14,6 +14,8 @@ void inicializarPunteros(tarea **tareas,int cant);
 void ingresarTareas(tarea **tareas,int cant);
 void listarTareas(tarea **tareas,tarea **tareasRealizadas,int cant);
 void mostrarTareas(tarea **tareas,int cant);
+void BuscarTarea(tarea **tareas,int cant,char *palabraBuscada);
+
 int main(int argc, char const *argv[])
 {
     tarea **tareasPendientes;
@@ -29,17 +31,25 @@ int main(int argc, char const *argv[])
 
 
     inicializarPunteros(tareasPendientes,cant);
-    inicializarPunteros(tareasRealizadas,cant);
+    //inicializarPunteros(tareasRealizadas,cant);
     ingresarTareas(tareasPendientes,cant);
-    listarTareas(tareasPendientes,tareasRealizadas,cant);
+    //listarTareas(tareasPendientes,tareasRealizadas,cant);
     mostrarTareas(tareasPendientes,cant);
-    mostrarTareas(tareasRealizadas,cant);
+    //mostrarTareas(tareasRealizadas,cant);
+    fflush(stdin);
+    char *palabraBuscada;
+
+    palabraBuscada= (char *) malloc(100*sizeof(char));
+    printf("Ingrese la palabra que desea buscar: ");
+    gets(palabraBuscada);
+    BuscarTarea(tareasPendientes,cant,palabraBuscada);
+
 
 
     for (int i = 0; i < cant; i++)
     {
-            free(tareasPendientes[i];)
-            free(tareasRealizadas[i];)
+            free(tareasPendientes[i]);
+            free(tareasRealizadas[i]);
     }
     free(tareasPendientes);
     free(tareasRealizadas);
@@ -107,4 +117,18 @@ void mostrarTareas(tarea **tareas,int cant)
             printf("%s\n",tareas[i]->Descripcion);
         }
     }
+}
+
+void BuscarTarea(tarea **tareas,int cant,char *palabraBuscada)
+{
+    for (int i = 0; i < cant; i++)
+    {
+        if (strstr(tareas[i]->Descripcion,palabraBuscada))
+        {
+            printf("ID: %d\n",tareas[i]->TareaID);
+            printf("Duracion: %d\n",tareas[i]->Duracion);
+            printf("%s\n",tareas[i]->Descripcion);
+        }
+    }
+
 }
