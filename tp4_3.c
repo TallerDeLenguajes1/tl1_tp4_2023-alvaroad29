@@ -24,25 +24,23 @@ void insertarNodo(Nodo **start,Tarea tarea);
 
 /*void insertarAlFinal(Nodo *start,Tarea tarea);*/
 
-//Nodo* buscarNodoPorId(Nodo *start,int idBuscado);
-
 void moverTareas(Nodo **startPendientes,Nodo **startRealizadas);
 
 void borrarNodo(Nodo **start,int idBorrar);
 
-Tarea ingresarTareas(int i);
+Tarea cargarTarea(int i);
 
 void mostrarTarea(Tarea tarea);
 
 void mostrarTareas(Nodo *startPendientes);
 
-//_-----------------------------
+Nodo* buscarNodoPorPalabra(Nodo*startPendientes,Nodo *startRealizadas,char *palabraBuscada);
 
-Nodo* BuscarTareaPorPalabra(Nodo*startPendientes,Nodo *startRealizadas,char *palabraBuscada);
-
-Nodo* BuscarTareaPorId(Nodo*startPendientes,Nodo *startRealizadas,int idBuscado);
+Nodo* buscarNodoPorId(Nodo*startPendientes,Nodo *startRealizadas,int idBuscado);
 
 void menu(Nodo*startPendientes,Nodo *startRealizadas);
+
+void liberarMemoria(Nodo**start);
 
 
 
@@ -74,10 +72,11 @@ int main(int argc, char const *argv[])
         switch (opcion2)
         {
         case 1:
+            // si hago esto dentro de una lista no voy a poder mantener un conteo del id???solo que pase el id como parametro?
             do
             {
                 i++;
-                tarea = ingresarTareas(i);
+                tarea = cargarTarea(i);
                 //mostrarTarea(tarea);
                 insertarNodo(&startPendientes,tarea);
                 printf("Desea crear otra tarea ( Si (1) / No (0) ): ");
@@ -103,10 +102,16 @@ int main(int argc, char const *argv[])
 
         }
 
-        
     } while (opcion2 != 0);
 
-
+    /*---------------libero memoria----------------*/
+    //printf("Libero\n");
+    liberarMemoria(&startPendientes);
+    liberarMemoria(&startRealizadas);
+    //printf("pendiente: \n");
+    //mostrarTareas(startPendientes);
+    //printf("Realizado: \n");
+    //mostrarTareas(startRealizadas);
     return 0;
 }
 
@@ -153,19 +158,8 @@ void insertarAlFinal(Nodo *start,Tarea tarea) //no es necesario el *start porque
 }
 */
 
-Nodo* buscarNodoPorId(Nodo *start,int idBuscado)
-{
-    Nodo* aux = start;
-    while (aux && aux->T.TareaID != idBuscado) //mientras aux no sea NULL y no encuentre el id
-    {
-        aux = aux->Siguiente;
-    }
-    return aux;
-}
 
-
-
-Tarea ingresarTareas(int i)
+Tarea cargarTarea(int i)
 {
     Tarea tarea;
     fflush(stdin);
@@ -269,34 +263,10 @@ void moverTareas(Nodo **startPendientes,Nodo **startRealizadas)
 }
 
 
-
-/* DESCARTADA-------------------
-void moverTareas(Nodo *startPendientes,Nodo **startRealizadas)
+Nodo* buscarNodoPorPalabra(Nodo*startPendientes,Nodo *startRealizadas,char *palabraBuscada)
 {
-    int eleccion;
-    puts("--------- INDIQUE QUE TAREAS REALIZO -----------");
-    Nodo *aux = startPendientes;
-    while (aux->Siguiente != NULL)
-    {
-        puts("Realizo la siguiente tarea: ??? ");
-        mostrarTarea(*startPendientes->T);
-        puts("1-Si / 0-No");
-        scanf("%d",&eleccion);
-        
-            if (eleccion)
-            {
-                
-            }
-        
-    }
-}
-*/
-
-
-Nodo* BuscarTareaPorPalabra(Nodo*startPendientes,Nodo *startRealizadas,char *palabraBuscada)
-{
-    Nodo* auxPendiente=startPendientes;
-    Nodo* auxRealizadas=startRealizadas;
+    Nodo* auxPendiente=startPendientes; //?son necesarios los nodos auxiliares
+    Nodo* auxRealizadas=startRealizadas; //comparado con como esta aplicado en la teoria(buscarPorId) es mejor,peor??
 
     //strstr no encuentra coincidencia devuelve NULL que seria considerado falso
     //no es necesario strstr(...) != NULL
@@ -328,12 +298,11 @@ Nodo* BuscarTareaPorPalabra(Nodo*startPendientes,Nodo *startRealizadas,char *pal
     return NULL;
 }
 
-Nodo* BuscarTareaPorId(Nodo*startPendientes,Nodo *startRealizadas,int idBuscado)
+Nodo* buscarNodoPorId(Nodo*startPendientes,Nodo *startRealizadas,int idBuscado)
 {
-
     Nodo* auxPendiente=startPendientes;
     Nodo* auxRealizadas=startRealizadas;
-    while (auxPendiente != NULL)
+    while (auxPendiente != NULL) // no es necesario el !=NULL pero lo pongo para entenderlo mejor
     {
         if (auxPendiente->T.TareaID == idBuscado)
         {
@@ -357,6 +326,8 @@ Nodo* BuscarTareaPorId(Nodo*startPendientes,Nodo *startRealizadas,int idBuscado)
     //Nodo *aux;
     //aux->T.TareaID = -1;
     //return aux;
+    //esta mal esto xq nodo no tiene reserve de memoria asi q estaba intentando a acceder a "nada"
+    //si le asignara memoria funcionaria pero es mas sencillo devolver null directamente
     return NULL;
 }
 
@@ -382,7 +353,7 @@ void menu(Nodo*startPendientes,Nodo *startRealizadas)
             fflush(stdin);
             printf("Ingrese el id de la tarea que desea buscar: ");
             scanf("%d",&idBuscado);
-            resultadoBusqueda = BuscarTareaPorId(startPendientes,startRealizadas,idBuscado);
+            resultadoBusqueda = buscarNodoPorId(startPendientes,startRealizadas,idBuscado);
             if (resultadoBusqueda)
             {
                 mostrarTarea(resultadoBusqueda->T);
@@ -397,7 +368,7 @@ void menu(Nodo*startPendientes,Nodo *startRealizadas)
             fflush(stdin);
             printf("Ingrese la palabra que desea buscar: ");
             gets(palabraBuscada);
-            resultadoBusqueda = BuscarTareaPorPalabra(startPendientes,startRealizadas,palabraBuscada);
+            resultadoBusqueda = buscarNodoPorPalabra(startPendientes,startRealizadas,palabraBuscada);
             if (resultadoBusqueda)
             {
                 mostrarTarea(resultadoBusqueda->T);
@@ -410,3 +381,39 @@ void menu(Nodo*startPendientes,Nodo *startRealizadas)
     }
     free(palabraBuscada);
 }
+
+void liberarMemoria(Nodo**start)
+{
+    Nodo *aux;
+    while (*start != NULL)
+    {
+        aux = *start; //asigno *start que contendria la direccion del primer nodo
+        *start = (*start)->Siguiente; // *Start = aux->siguiente;
+        free(aux->T.Descripcion); //libero la descripcion
+        free(aux); //libero la memoria dinamica asignada a ese nodo
+    }
+    
+}
+
+/* 
+DESCARTADA-------------------
+void moverTareas(Nodo *startPendientes,Nodo **startRealizadas)
+{
+    int eleccion;
+    puts("--------- INDIQUE QUE TAREAS REALIZO -----------");
+    Nodo *aux = startPendientes;
+    while (aux->Siguiente != NULL)
+    {
+        puts("Realizo la siguiente tarea: ??? ");
+        mostrarTarea(*startPendientes->T);
+        puts("1-Si / 0-No");
+        scanf("%d",&eleccion);
+        
+            if (eleccion)
+            {
+                
+            }
+        
+    }
+}
+*/
