@@ -24,7 +24,7 @@ void insertarNodo(Nodo **start,Tarea tarea);
 
 /*void insertarAlFinal(Nodo *start,Tarea tarea);*/
 
-Nodo* buscarNodoPorId(Nodo *start,int idBuscado);
+//Nodo* buscarNodoPorId(Nodo *start,int idBuscado);
 
 void moverTareas(Nodo **startPendientes,Nodo **startRealizadas);
 
@@ -35,6 +35,15 @@ Tarea ingresarTareas(int i);
 void mostrarTarea(Tarea tarea);
 
 void mostrarTareas(Nodo *startPendientes);
+
+//_-----------------------------
+
+Nodo* BuscarTareaPorPalabra(Nodo*startPendientes,Nodo *startRealizadas,char *palabraBuscada);
+
+Nodo* BuscarTareaPorId(Nodo*startPendientes,Nodo *startRealizadas,int idBuscado);
+
+void menu(Nodo*startPendientes,Nodo *startRealizadas);
+
 
 
 /*------------------------------------ MAIN -------------------------------*/
@@ -60,8 +69,7 @@ int main(int argc, char const *argv[])
         printf("2-Mostrar tareas pendientes\n");
         printf("3-Marcar tareas a realizadas\n");
         printf("4-Mostrar tareas realizadas\n");
-        printf("5-Buscar tarea por ID\n");
-        printf("6-Buscar tarea por palabra\n");
+        printf("5-Buscar tarea \n");
         scanf("%d",&opcion2);
         switch (opcion2)
         {
@@ -90,12 +98,9 @@ int main(int argc, char const *argv[])
             break;
 
         case 5:
-            
+            menu(startPendientes,startRealizadas);
             break;
 
-        case 6:
-            
-            break;
         }
 
         
@@ -286,3 +291,122 @@ void moverTareas(Nodo *startPendientes,Nodo **startRealizadas)
     }
 }
 */
+
+
+Nodo* BuscarTareaPorPalabra(Nodo*startPendientes,Nodo *startRealizadas,char *palabraBuscada)
+{
+    Nodo* auxPendiente=startPendientes;
+    Nodo* auxRealizadas=startRealizadas;
+
+    //strstr no encuentra coincidencia devuelve NULL que seria considerado falso
+    //no es necesario strstr(...) != NULL
+
+    while (auxPendiente != NULL)
+    {
+        if ( strstr(auxPendiente->T.Descripcion,palabraBuscada) )
+        {
+            puts("\n<<<<<<<< Tarea en estado PENDIENTE >>>>>>>>>>\n");
+            return auxPendiente;
+        }
+        auxPendiente = auxPendiente->Siguiente;
+    }
+
+    while (auxRealizadas != NULL)
+    {
+        if (strstr(auxRealizadas->T.Descripcion,palabraBuscada))
+        {
+            puts("\n<<<<<<<< Tarea en estado REALIZADA >>>>>>>>>>\n");
+            return auxRealizadas;
+        }
+        auxRealizadas = auxRealizadas->Siguiente;
+    }
+
+    //si no hay coincidencias
+    //Nodo *aux;
+    //aux->T.TareaID = -1;
+    //return aux;
+    return NULL;
+}
+
+Nodo* BuscarTareaPorId(Nodo*startPendientes,Nodo *startRealizadas,int idBuscado)
+{
+
+    Nodo* auxPendiente=startPendientes;
+    Nodo* auxRealizadas=startRealizadas;
+    while (auxPendiente != NULL)
+    {
+        if (auxPendiente->T.TareaID == idBuscado)
+        {
+            puts("\n<<<<<<<< Tarea en estado PENDIENTE >>>>>>>>>>\n");
+            return auxPendiente;
+        }
+        auxPendiente = auxPendiente->Siguiente;
+    }
+    
+    while (auxRealizadas != NULL)
+    {
+        if (auxRealizadas->T.TareaID == idBuscado)
+        {
+            puts("\n<<<<<<<< Tarea en estado REALIZADA >>>>>>>>>>\n");
+            return auxRealizadas;
+        }
+        auxRealizadas = auxRealizadas->Siguiente;
+    }
+
+    //si no hay coincidencias
+    //Nodo *aux;
+    //aux->T.TareaID = -1;
+    //return aux;
+    return NULL;
+}
+
+void menu(Nodo*startPendientes,Nodo *startRealizadas)
+{
+    puts("{#}{#}{#}{#}{#}{#} MENU DE BUSQUEDA {#}{#}{#}{#}{#}{#}");
+    int op1=1,idBuscado;
+    Nodo *resultadoBusqueda; //nodo que guardara el resultado de la busqueda
+    char *palabraBuscada;
+    palabraBuscada= (char *) malloc(100*sizeof(char));
+    while (op1 != 0)
+    {
+        printf("\n");
+        puts("[0 - Salir]");
+        puts("[1 - Busqueda por ID]");
+        puts("[2 - Busqueda por palabra]");
+        printf("\n");
+        scanf("%d",&op1);
+        switch (op1)
+        {
+        case 1:
+            puts("-----BUSQUEDA POR ID----");
+            fflush(stdin);
+            printf("Ingrese el id de la tarea que desea buscar: ");
+            scanf("%d",&idBuscado);
+            resultadoBusqueda = BuscarTareaPorId(startPendientes,startRealizadas,idBuscado);
+            if (resultadoBusqueda)
+            {
+                mostrarTarea(resultadoBusqueda->T);
+            }else
+            {
+                printf("\n<<<<<<<< No se encontro la tarea >>>>>>>>>>\n");
+            }
+            break;
+
+        case 2:
+            puts("-----BUSQUEDA POR PALABRA----");
+            fflush(stdin);
+            printf("Ingrese la palabra que desea buscar: ");
+            gets(palabraBuscada);
+            resultadoBusqueda = BuscarTareaPorPalabra(startPendientes,startRealizadas,palabraBuscada);
+            if (resultadoBusqueda)
+            {
+                mostrarTarea(resultadoBusqueda->T);
+            }else
+            {
+                printf("\n<<<<<<<< No se encontro la tarea >>>>>>>>>>\n");
+            }
+            break;
+        }
+    }
+    free(palabraBuscada);
+}
