@@ -85,6 +85,7 @@ int main(int argc, char const *argv[])
             break;
 
         case 2:
+            printf("\n---------TAREAS PENDIENTES---------\n");
             mostrarTareas(startPendientes);
             break;
 
@@ -93,6 +94,7 @@ int main(int argc, char const *argv[])
             break;
 
         case 4:
+            printf("\n---------TAREAS REALIZADAS---------\n");
             mostrarTareas(startRealizadas);
             break;
 
@@ -392,7 +394,7 @@ void liberarMemoria(Nodo**start)
         free(aux->T.Descripcion); //libero la descripcion
         free(aux); //libero la memoria dinamica asignada a ese nodo
     }
-    
+    //se libera start??
 }
 
 /* 
