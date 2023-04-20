@@ -42,6 +42,8 @@ void menu(Nodo*startPendientes,Nodo *startRealizadas);
 
 void liberarMemoria(Nodo**start);
 
+void eliminar(Nodo **start);
+
 
 
 /*------------------------------------ MAIN -------------------------------*/
@@ -50,9 +52,10 @@ int main(int argc, char const *argv[])
 {
     Nodo *startPendientes = crearListaVacia(); // cabeza de la lista, start no tiene reserva de memoria, solo es un puntero
     Nodo *startRealizadas = crearListaVacia(); //es un puntero de tipo Nodo que tendra la D.M. del primer nodo o NULL si esta vacia la lista
+    Nodo *startEnProceso = crearListaVacia();
 
     // carga de tareas
-    int opcion=1,opcion2=0;
+    int opcion=1,opcion2=0,opcion3=0;
     int prueba;
     Tarea tarea;
     Nodo *resultadoBusqueda; //nodo que guardara el resultado de la busqueda
@@ -68,6 +71,7 @@ int main(int argc, char const *argv[])
         printf("3-Marcar tareas a realizadas\n");
         printf("4-Mostrar tareas realizadas\n");
         printf("5-Buscar tarea \n");
+        printf("6-Eliminar una tarea\n");
         scanf("%d",&opcion2);
         switch (opcion2)
         {
@@ -100,6 +104,28 @@ int main(int argc, char const *argv[])
 
         case 5:
             menu(startPendientes,startRealizadas);
+            break;
+
+        case 6:
+            do
+            {
+                printf("0 - Salir\n");
+                printf("1 - Eliminar tareas pendientes\n");
+                printf("2 - Eliminar tareas realizadas\n");
+                scanf("%d",&opcion3);
+                switch (opcion3)
+                {
+                case 1:
+                    eliminar(&startPendientes);
+                    break;
+
+                case 2:
+                    eliminar(&startRealizadas);
+                    break;
+
+                }
+            } while (opcion3 != 0);
+            
             break;
 
         }
@@ -396,6 +422,46 @@ void liberarMemoria(Nodo**start)
     }
     //se libera start??
 }
+
+void eliminar(Nodo **start)
+{
+    int eleccion=0; 
+    Nodo *aux = *start;
+    
+    if (aux != NULL)
+    {
+        puts("--------- INDIQUE LAS TAREAS QUE DESEA ELIMINAR -----------");
+        while (aux != NULL)
+        {
+            puts("Desea eliminar la siguiente tarea?: ");
+            mostrarTarea(aux->T);
+            puts("1-Si / 0-No");
+            scanf("%d",&eleccion);
+            if (eleccion)
+            {
+                //startRealizadas contiene la direccion de memoria de startRealizadas(lo q necesito mandar)
+                //*startRealizadas contendria el contenido del puntero que seria la direccion de memoria del primer nodo(o NULL)
+                borrarNodo(start,aux->T.TareaID);
+            }
+        aux = aux->Siguiente;
+        }
+    }else
+    {
+        printf("\n<<<<<<<<<<< La lista no contiene tareas para eliminar >>>>>>>>>>>>>>>\n");
+    }
+    
+}
+
+
+
+
+
+
+
+
+
+
+
 
 /* 
 DESCARTADA-------------------
