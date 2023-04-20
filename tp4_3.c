@@ -44,6 +44,8 @@ void liberarMemoria(Nodo**start);
 
 void eliminar(Nodo **start);
 
+void mostrarDatos(Nodo *start);
+
 
 
 /*------------------------------------ MAIN -------------------------------*/
@@ -71,7 +73,8 @@ int main(int argc, char const *argv[])
         printf("3-Marcar tareas a realizadas\n");
         printf("4-Mostrar tareas realizadas\n");
         printf("5-Buscar tarea \n");
-        printf("6-Eliminar una tarea\n");
+        printf("6-Eliminar tareas de una lista en particular\n");
+        printf("7-Mostrar datos de una lista en particular\n");
         scanf("%d",&opcion2);
         switch (opcion2)
         {
@@ -125,7 +128,26 @@ int main(int argc, char const *argv[])
 
                 }
             } while (opcion3 != 0);
-            
+            break;
+        case 7:
+            do
+            {
+                printf("0 - Salir\n");
+                printf("1 - Mostrar datos de tareas pendientes\n");
+                printf("2 - Mostrar datos de tareas realizadas\n");
+                scanf("%d",&opcion3);
+                switch (opcion3)
+                {
+                case 1:
+                    mostrarDatos(startPendientes);
+                    break;
+
+                case 2:
+                    mostrarDatos(startRealizadas);
+                    break;
+
+                }
+            } while (opcion3 != 0);
             break;
 
         }
@@ -452,6 +474,28 @@ void eliminar(Nodo **start)
     
 }
 
+
+void mostrarDatos(Nodo *start)
+{
+    Nodo *aux = start;
+    int sumaTiempos=0,cantidadTareas=0;
+    if (aux != NULL)
+    {
+        while (aux != NULL)
+        {
+            cantidadTareas ++;
+            sumaTiempos = sumaTiempos + aux->T.Duracion;
+            aux = aux->Siguiente;
+        }
+        printf("Cantidad de tareas de la lista: %d\n",cantidadTareas);
+        printf("Tiempo asociado de la lista: %d\n",sumaTiempos);
+
+    }
+    else
+    {
+        printf("\n<<<<<<<<<<< La lista no contiene tareas >>>>>>>>>>>>>>>\n");
+    }
+}
 
 
 
