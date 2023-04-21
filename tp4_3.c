@@ -24,9 +24,9 @@ void insertarNodo(Nodo **start,Tarea tarea);
 
 /*void insertarAlFinal(Nodo *start,Tarea tarea);*/
 
-void moverTareas(Nodo **startPendientes,Nodo **startRealizadas);
+void moverTareas(Nodo **startPendientes,Nodo **startRealizadas,Nodo **startEnProceso);
 
-void borrarNodo(Nodo **start,int idBorrar);
+void borrarNodo(Nodo **start,int idBorrar); // mi eliminar
 
 Tarea cargarTarea(int i);
 
@@ -38,14 +38,17 @@ Nodo* buscarNodoPorPalabra(Nodo*startPendientes,Nodo *startRealizadas,char *pala
 
 Nodo* buscarNodoPorId(Nodo*startPendientes,Nodo *startRealizadas,int idBuscado);
 
+Tarea buscarNodoPorId2(Nodo*startPendientes,int idBuscado);
+
 void menu(Nodo*startPendientes,Nodo *startRealizadas);
 
 void liberarMemoria(Nodo**start);
 
-void eliminar(Nodo **start);
+//void eliminar(Nodo **start);
 
 void mostrarDatos(Nodo *start);
 
+int tareaEnLista(Nodo *startPendiente,Nodo *startRealizada,Nodo *startEnProceso,int id);
 
 
 /*------------------------------------ MAIN -------------------------------*/
@@ -70,11 +73,9 @@ int main(int argc, char const *argv[])
         printf("0-Salir\n");
         printf("1-Cargar tareas\n");
         printf("2-Mostrar tareas pendientes\n");
-        printf("3-Marcar tareas a realizadas\n");
+        printf("3-Mover tareas\n");
         printf("4-Mostrar tareas realizadas\n");
         printf("5-Buscar tarea \n");
-        printf("6-Eliminar tareas de una lista en particular\n");
-        printf("7-Mostrar datos de una lista en particular\n");
         scanf("%d",&opcion2);
         switch (opcion2)
         {
@@ -97,7 +98,7 @@ int main(int argc, char const *argv[])
             break;
 
         case 3:
-            moverTareas(&startPendientes,&startRealizadas);
+            moverTareas(&startPendientes,&startRealizadas,&startEnProceso);
             break;
 
         case 4:
@@ -107,47 +108,6 @@ int main(int argc, char const *argv[])
 
         case 5:
             menu(startPendientes,startRealizadas);
-            break;
-
-        case 6:
-            do
-            {
-                printf("0 - Salir\n");
-                printf("1 - Eliminar tareas pendientes\n");
-                printf("2 - Eliminar tareas realizadas\n");
-                scanf("%d",&opcion3);
-                switch (opcion3)
-                {
-                case 1:
-                    eliminar(&startPendientes);
-                    break;
-
-                case 2:
-                    eliminar(&startRealizadas);
-                    break;
-
-                }
-            } while (opcion3 != 0);
-            break;
-        case 7:
-            do
-            {
-                printf("0 - Salir\n");
-                printf("1 - Mostrar datos de tareas pendientes\n");
-                printf("2 - Mostrar datos de tareas realizadas\n");
-                scanf("%d",&opcion3);
-                switch (opcion3)
-                {
-                case 1:
-                    mostrarDatos(startPendientes);
-                    break;
-
-                case 2:
-                    mostrarDatos(startRealizadas);
-                    break;
-
-                }
-            } while (opcion3 != 0);
             break;
 
         }
@@ -290,26 +250,142 @@ void borrarNodo(Nodo **start,int idBorrar)
     }
 }
 
-void moverTareas(Nodo **startPendientes,Nodo **startRealizadas)
+void moverTareas(Nodo **startPendientes,Nodo **startRealizadas,Nodo **startEnProceso)
 {
-    int eleccion=0; 
-    Nodo *aux = *startPendientes;
-    puts("--------- INDIQUE QUE TAREAS REALIZO -----------");
-    while (aux != NULL)
+    int eleccion=0,id=0,valor = 0; 
+    //Nodo *aux = *startPendientes;
+    //Nodo *aux1 = *startRealizadas;
+    //Nodo *aux2 = *startEnProceso;
+
+    if (*startPendientes != NULL || *startRealizadas != NULL || *startEnProceso != NULL)
     {
-        puts("Realizo la siguiente tarea: ??? ");
-        mostrarTarea(aux->T);
-        puts("1-Si / 0-No");
-        scanf("%d",&eleccion);
-        if (eleccion)
+        do
         {
-            //startRealizadas contiene la direccion de memoria de startRealizadas(lo q necesito mandar)
-            //*startRealizadas contendria el contenido del puntero que seria la direccion de memoria del primer nodo(o NULL)
-            insertarNodo(startRealizadas,aux->T); 
-            borrarNodo(startPendientes,aux->T.TareaID);
-        }
-        aux = aux->Siguiente;
+            //aux = *startPendientes;
+            //aux1 = *startRealizadas;
+            //aux2 = *startEnProceso;
+            puts("=========== LISTADO DE TODAS LAS TAREAS =========");
+
+            printf("\n---------TAREAS PENDIENTES---------\n");
+            mostrarTareas(*startPendientes);
+
+            printf("\n---------TAREAS REALIZADAS---------\n");
+            mostrarTareas(*startRealizadas);
+
+            printf("\n---------TAREAS EN PROCESO---------\n");
+            mostrarTareas(*startEnProceso);
+
+            printf("Indique que el ID de la tarea que desea seleccionar: \n");
+            scanf("%d",&id);
+            printf("0-Salir: \n");
+            printf("1-Mover tarea a pendiente:\n");
+            printf("2-Mover tarea a realizada:\n");
+            printf("3-Mover tarea a en proceso:\n");
+            printf("4-Eliminar la tarea: \n");
+            scanf("%d",&eleccion);
+
+            valor=tareaEnLista(*startPendientes,*startRealizadas,*startEnProceso,id);
+
+            switch (eleccion)
+            {
+            case 1:
+                switch (valor) // 1-tarea en pendiente / 2-tarea en realizada / 3-tarea en proceso
+                {
+                case 1:
+                    printf("\n<<<< La tarea seleccionada ya se encuentra en PENDIENTES >>>>\n");
+                    break;
+
+                case 2:
+                    insertarNodo(startPendientes,buscarNodoPorId2(*startRealizadas,id)); 
+                    borrarNodo(startRealizadas,id); 
+                    printf("\n<<<< Tarea transferida con exito a PENDIENTES >>>>\n");
+                    break;
+
+                case 3:
+                    insertarNodo(startPendientes,buscarNodoPorId2(*startEnProceso,id)); 
+                    borrarNodo(startEnProceso,id); 
+                    printf("\n<<<< Tarea transferida con exito a PENDIENTES >>>>\n");
+                    break;
+                }
+                break;
+
+            case 2:
+                switch (valor)
+                {
+                case 1:
+                    insertarNodo(startRealizadas,buscarNodoPorId2(*startPendientes,id));
+                    borrarNodo(startPendientes,id); 
+                    printf("\n<<<< Tarea transferida con exito a REALIZADAS >>>>\n");
+                    break;
+
+                case 2:
+                    printf("\n<<<< La tarea seleccionada ya se encuentra en REALIZADAS >>>>\n");
+                    break;
+
+                case 3:
+                    insertarNodo(startRealizadas,buscarNodoPorId2(*startEnProceso,id)); 
+                    borrarNodo(startEnProceso,id); 
+                    printf("\n<<<< Tarea transferida con exito a REALIZADAS >>>>\n");
+                    break;
+                }
+                break;
+
+            case 3:
+                switch (valor)
+                {
+                case 1:
+                    insertarNodo(startEnProceso,buscarNodoPorId2(*startPendientes,id)); 
+                    borrarNodo(startPendientes,id);
+                    printf("\n<<<< Tarea transferida con exito a en PROCESO>>>>\n");
+                    break;
+
+                case 2:
+                    insertarNodo(startEnProceso,buscarNodoPorId2(*startRealizadas,id)); 
+                    borrarNodo(startRealizadas,id); 
+                    printf("\n<<<< Tarea transferida con exito a en PROCESO>>>>\n");
+                    break;
+
+                case 3:
+                    printf("\n<<<< La tarea seleccionada ya se encuentra en PROCESO >>>>\n");
+                    break;
+                }
+                break;
+
+            case 4:
+                //startRealizadas contiene la direccion de memoria de startRealizadas(lo q necesito mandar)
+                //*startRealizadas contendria el contenido del puntero que seria la direccion de memoria del primer nodo(o NULL)
+                borrarNodo(startPendientes,id);
+                borrarNodo(startRealizadas,id);
+                borrarNodo(startEnProceso,id); 
+                // no hago un control de donde proviene la tarea porque si no esta en la lista no hara nada
+                break;
+            }
+
+            printf("Desea modificar otra tarea???: ( SI(1) - NO(0) )\n");
+            scanf("%d",&eleccion);
+        }while (eleccion != 0);
+
+    }else
+    {
+        printf("\n <<<<<<<<<<< NO HAY TAREAS PARA MOVER >>>>>>>>>>>> \n");
     }
+
+    puts("=========== LISTADO DE TODAS LAS TAREAS =========");
+
+    printf("\n---------TAREAS PENDIENTES---------\n");
+    mostrarTareas(*startPendientes);
+    mostrarDatos(*startPendientes);
+
+    printf("\n---------TAREAS REALIZADAS---------\n");
+    mostrarTareas(*startRealizadas);
+    mostrarDatos(*startRealizadas);
+
+
+
+    printf("\n---------TAREAS EN PROCESO---------\n");
+    mostrarTareas(*startEnProceso);
+    mostrarDatos(*startEnProceso);
+
 }
 
 
@@ -445,6 +521,77 @@ void liberarMemoria(Nodo**start)
     //se libera start??
 }
 
+
+
+void mostrarDatos(Nodo *start)
+{
+    Nodo *aux = start;
+    int sumaTiempos=0,cantidadTareas=0;
+    if (aux != NULL)
+    {
+        while (aux != NULL)
+        {
+            cantidadTareas ++;
+            sumaTiempos = sumaTiempos + aux->T.Duracion;
+            aux = aux->Siguiente;
+        }
+        printf("Cantidad de tareas de la lista: %d\n",cantidadTareas);
+        printf("Tiempo asociado de la lista: %d\n",sumaTiempos);
+
+    }
+    else
+    {
+        printf("\n<<<<<<<<<<< La lista no contiene tareas >>>>>>>>>>>>>>>\n");
+    }
+}
+
+
+int tareaEnLista(Nodo *startPendiente,Nodo *startRealizada,Nodo *startEnProceso,int id)
+{
+    Nodo *aux = startPendiente;
+    Nodo *aux1 = startRealizada;
+    Nodo *aux2 = startEnProceso;
+    while (aux)
+    {
+        if (aux->T.TareaID == id)
+        {
+            return 1;
+        }
+        aux = aux->Siguiente;
+    }
+    while (aux1)
+    {
+        if (aux1->T.TareaID == id)
+        {
+            return 2;
+        }
+        aux1 = aux1->Siguiente;
+    }
+    while (aux2)
+    {
+        if (aux2->T.TareaID == id)
+        {
+            return 3;
+        }
+        aux2 = aux2->Siguiente;
+    }
+    return 0;
+}
+
+Tarea buscarNodoPorId2(Nodo*start,int idBuscado)
+{
+    Nodo *aux = start;
+    while (aux != NULL) // no es necesario el !=NULL pero lo pongo para entenderlo mejor
+    {
+        if (aux->T.TareaID == idBuscado)
+        {
+            return aux->T;
+        }
+        aux = aux->Siguiente;
+    }
+}
+
+/*
 void eliminar(Nodo **start)
 {
     int eleccion=0; 
@@ -473,34 +620,7 @@ void eliminar(Nodo **start)
     }
     
 }
-
-
-void mostrarDatos(Nodo *start)
-{
-    Nodo *aux = start;
-    int sumaTiempos=0,cantidadTareas=0;
-    if (aux != NULL)
-    {
-        while (aux != NULL)
-        {
-            cantidadTareas ++;
-            sumaTiempos = sumaTiempos + aux->T.Duracion;
-            aux = aux->Siguiente;
-        }
-        printf("Cantidad de tareas de la lista: %d\n",cantidadTareas);
-        printf("Tiempo asociado de la lista: %d\n",sumaTiempos);
-
-    }
-    else
-    {
-        printf("\n<<<<<<<<<<< La lista no contiene tareas >>>>>>>>>>>>>>>\n");
-    }
-}
-
-
-
-
-
+*/
 
 
 
